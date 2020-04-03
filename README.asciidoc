@@ -1,0 +1,125 @@
+= Muhammed Emre Kara 160202094
+
+== Yazılım Tasarım Kalıpları
+
+:imagesdir: ./img
+:data-uri:
+
+
+*Bazı Linux Dağıtımları:*
+
+* Slackware
+* Debian
+* openSUSE
+* Red Hat
+* Gentoo
+* Arch Linux
+* Fedora
+* CentOS
+
+*Linux vakfı üyesi bazı vakıflar:*
+
+. Fujitsu
+. IBM
+. Intel
+. NEC
+. Oracle
+. Qualcomm
+. Samsung
+. AMD
+. China Mobile
+. Microsoft
+
+=== Admonitions
+
+NOTE: Admonation NOTE Örneği
+
+TIP: Admonation TIP Örneği
+
+IMPORTANT: Admonation IMPORTANT Örneği
+
+
+=== Links
+
+Dış Bağlantılar: https://github.com/EmreKaragh[External Link]
+
+Özel karakter ve boşluk içeren linkler: link:https://example.org/?q=%5Ba%20b%5D[URL with special characters]
+
+Windows yolu : link:E:\yazilim_tasarim_kaliplari\160202094\160202094\README.asciidoc[Windows Path]
+
+Bağıl Link: link:img/sunset.jpg[Relative Link]
+
+E-posta:  mailto:mailemrek@gmail.com[mail me!]
+
+Özellik belirtimli Link https://discuss.asciidoctor.org[Yeni Pencerede Açmak İçin Tıklayın,role=external,window=_blank]
+
+Inline Anchor: <<sunset_image>>.
+
+Dahili referans <<Videos,Videos>>.
+
+=== Images
+
+==== Block_Images
+[[sunset_image]]
+.Sunset image
+image::sunset.jpg[Sunset]
+
+[#img-sunset]
+[caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::sunset.jpg[Sunset]
+
+==== Inline_Images
+Satır içi image:icons/play.png[Play, title="Play"] resim örneği
+
+image:sunset.jpg[Sunset,150,150,role="right"] Inline image with positioning role
+
+=== Videos
+
+==== Block_Vidoes
+
+v ideo::vids/4seconds.mp4[width=640, start=60, end=140, options=autoplay]
+
+==== Embed_Videos
+
+video::qu_uJQQo_Us[youtube]
+
+=== Code Blocks
+
+==== Inline
+
+Inline C++ `std::cout << "Hello, world!\n";` 
+
+==== With highlight and Title
+.HelloWorld.cpp
+[source,c++]
+----
+#include <iostream>
+#include <string>
+
+int main()
+{
+	std::cout << "Hello, world!\n";
+}
+----
+.Linux Bash Code
+[source, bash]
+----
+Rectangle_Area() {
+area=$(($1 * $2))
+echo "Area is : $area"
+}
+
+Rectangle_Area 10 20
+----
+
+=== Tables
+.Video ve Resim Türleri
+|===
+|<<Videos,Videos>> |<<Images,Images>>
+
+|<<Block_Videos,Block Videos>>
+|<<Block_Images,Block Images>>
+
+|<<Embed_Videos,Embed Videos>>
+|<<Inline_Images,Inline Images>>
+|===

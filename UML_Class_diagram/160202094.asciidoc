@@ -1,0 +1,66 @@
+= Muhammed Emre Kara 160202094
+
+== Yazılım Tasarım Kalıpları
+
+IMPORTANT: Use spesifik bir Dependency Tipi olduğundan <<Videos,[1]>>
+Oyuncu ..> Silah : <use> yazımı ile Dependency ve Use kullanımı bir arada yapılmıştır.
+[uml,file="umlClass1.png"]
+--
+@startuml
+left to right direction
+
+Class Beden{
+    -Oyuncu oyuncu
+}
+Class Oyuncu{
+    -Beden beden
+    
+}
+Class Kol{
+    +hareket()
+}
+Class Bacak{
+    +hareket()
+}
+Class Kafa{
+    +hareket()
+}
+Class Govde{
+}
+Class Durbun4x{
+    -katsayı = 4
+    +yakınlaştır(katsayı)
+}
+Class Durbun2x{
+    -katsayı = 2
+    +yakınlaştır(katsayı)
+}
+Class Stabilizer{
+    +satabilise()
+}
+Class Silah{
+    +fire()
+}
+Class ak47{
+    -Sekme Kat Sayısı = 4
+}
+interface Idurbun {
+	+yakınlaştır(katsayı)
+}
+
+Beden - Oyuncu
+Kol"2" --* "1"Beden
+Bacak"2" --* "1"Beden
+Kafa"1" --* "1"Beden
+Govde"1" --* "1"Beden
+Durbun4x --o Silah
+Durbun2x --o Silah
+Stabilizer --o Silah
+ak47 --|> Silah
+Oyuncu ..> Silah : <<use>>
+Idurbun <|.. Durbun4x
+Idurbun <|.. Durbun2x
+@enduml
+--  
+== Notes
+. Usage is a dependency in which one named element (client) requires another named element (supplier) for its full definition or implementation. https://www.uml-diagrams.org/dependency.html[Source]
