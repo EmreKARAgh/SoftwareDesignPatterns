@@ -10,35 +10,36 @@ Oyuncu ..> Silah : <use> yazımı ile Dependency ve Use kullanımı bir arada ya
 left to right direction
 
 Class Beden{
+    #hareket()
     -Oyuncu oyuncu
 }
 Class Oyuncu{
     -Beden beden
-    
+    +silahlan(Silah)
 }
 Class Kol{
-    +hareket()
+    +Kavra()
 }
 Class Bacak{
-    +hareket()
+    +Çömel()
 }
 Class Kafa{
-    +hareket()
+    -Dön()
 }
 Class Govde{
+    -Genişlik
 }
 Class Durbun4x{
     -katsayı = 4
-    +yakınlaştır(katsayı)
 }
 Class Durbun2x{
     -katsayı = 2
-    +yakınlaştır(katsayı)
 }
 Class Stabilizer{
     +satabilise()
 }
 Class Silah{
+    -Atış Hızı
     +fire()
 }
 Class ak47{
@@ -48,11 +49,11 @@ interface Idurbun {
 	+yakınlaştır(katsayı)
 }
 
-Beden - Oyuncu
-Kol"2" --* "1"Beden
-Bacak"2" --* "1"Beden
-Kafa"1" --* "1"Beden
-Govde"1" --* "1"Beden
+Beden"1" -- "1"Oyuncu
+Kol"2" --* Beden
+Bacak"2" --* Beden
+Kafa"1" --* Beden
+Govde"1" --* Beden
 Durbun4x --o Silah
 Durbun2x --o Silah
 Stabilizer --o Silah
