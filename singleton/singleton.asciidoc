@@ -1,0 +1,124 @@
+= Muhammed Emre Kara 160202094
+
+== Yazılım Tasarım Kalıpları
+
+=== Singleton
+
+==== SimpleSingleton Code
+.SimpleSingleton.py
+[source,python]
+----
+#1: Optional[...] is a shorthand notation for Union[..., None], telling the type checker that either an object of the specific type is required, or None is required.  Whenever you have a keyword argument with default value None, you should use Optional.
+#2 https://stackoverflow.com/a/9663601/8149411
+from __future__ import annotations
+from typing import Optional
+
+
+class CodeMeta(type):
+    
+    _instance: Optional[Code] = None  #1
+    _data = 0
+    def __call__(self,data=0) -> Code: #2
+        if self._instance is None:
+            self._instance = super().__call__()
+            self._data = data
+        return self._instance
+
+
+class Code(metaclass=CodeMeta):
+    def setData(self,data):
+        self._data = data
+    
+
+
+s1 = Code()
+s2 = Code()
+print('s1._data:',s1._data, '  s2._data:',s2._data)
+print()
+print('s1.setData(5)')
+s1.setData(5)
+print()
+print('s1._data:',s1._data, '  s2._data:',s2._data)
+print()
+print('id(s1):',id(s1), '\nid(s2):',id(s2))
+----
+==== SimpleSingleton UML
+[uml,file="SimpleSingletonUML.png"]
+--
+@startuml
+Class CodeMeta{
+    #Code _instance = None
+    #int  _data =0
+    +Code __call__(self,data=0)
+}
+Class Code{
+    +setData(self,data)
+}
+CodeMeta --|> type
+Code ..> CodeMeta : <<instantiate(metaclass)>>
+@enduml
+--
+
+
+
+==== ThreadSafeSingleton Code
+.ThreadSafeSingleton.py
+[source,python]
+----
+from __future__ import annotations
+from threading import Lock, Thread
+from typing import Optional
+
+class CodeMeta(type):
+    _instance: Optional[Code] = None
+
+    _lock: Lock = Lock() <1>
+
+    def __call__(cls, *args, **kwargs):
+        with cls._lock: <2>
+            if not cls._instance:
+                cls._instance = super().__call__(*args, **kwargs)
+        return cls._instance
+
+
+class Code(metaclass=CodeMeta):
+    value: str = None
+
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+def test_singleton(value: str) -> None:
+    singleton = Code(value)
+    print(singleton.value)
+
+
+process1 = Thread(target=test_singleton, args=("Protected",)) <3>
+process2 = Thread(target=test_singleton, args=("Private",))
+process1.start() <4>
+process2.start()
+----
+==== ThreadSafeSingleton UML
+[uml,file="ThreadSafeSingletonUML.png"]
+--
+@startuml
+Class CodeMeta{
+    #Code _instance = None
+    #Lock _lock 
+    #int _data =0
+    +__call__(Code cls, *args, **kwargs)
+}
+Class Code{
+    +str value
+    +str __init__(Code self, str Value=None)
+}
+
+
+Code ..> CodeMeta : <<instantiate(metaclass)>>
+CodeMeta --|> type
+@enduml
+--
+
+<1> Lock Class Object
+<2> Locks the Other Threads while current Thread exit the code below
+<3> Creates a Thread Object
+<4> Starts the Thread
