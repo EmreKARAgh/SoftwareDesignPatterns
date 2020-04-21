@@ -1,0 +1,145 @@
+# -*- coding: utf-8 -*-
+##### Enemy Sayısı Enemy Zorluğu Drop Sayısı, Drop Kalitesi
+#### Karakterin bulunduğu konum krallık(dress,foot), asker sayısı(chair sayısı), Tarih(dress), Ordu Morali(NPC),
+import abc
+
+class Character:
+    def __init__(self,name: str, party_size: int, party_morale: int):
+        self.name = name
+        self.party_size = party_size
+        self.party_morale= party_morale
+class TavernBuilder(metaclass=abc.ABCMeta):
+    def __init__(self, char: Character):
+        self.char = char
+    def createTavern(self):
+        pass
+    def buildChairs(self):
+        pass
+    def buildNPCs(self):
+        pass
+    def buildFoods(self):
+        pass
+    def dressItems(self):
+        pass
+    def dressNPCs(self):
+        pass
+    def getTavern(self):    
+        pass
+    
+
+class TavernKuzait(TavernBuilder):
+    def __init__(self,char: Character):
+        super().__init__(char)
+    def createTavern(self):
+        self.tavern = Tavern(tavernType='Kuzait')
+    def buildChairs(self):
+        for i in range(self.char.party_size):
+            self.tavern.chairs.append(i)
+    def buildNPCs(self):
+        if self.char.party_morale <= 50:
+            for i in range(10):
+                self.tavern.NPCs.append('bronze')
+        elif self.char.party_morale > 50:
+            for i in range(10):
+                self.tavern.NPCs.append('bronze')
+            for i in range(5):
+                self.tavern.NPCs.append('silver')
+    def buildFoods(self):
+        for i in range(50):
+            self.tavern.foods.append('grain')
+        for i in range (10):
+            self.tavern.foods.append('beef')
+    def dressItems(self):
+        for i in range(len(self.tavern.chairs)):
+            self.tavern.chairs[i] = 'bear skin dressed chair'
+    def dressNPCs(self):
+        for i in range(len(self.tavern.NPCs)):
+             self.tavern.NPCs[i] = 'cloth dressed NPC'
+    def getTavern(self):
+        return self.tavern
+    
+def unique(list1): 
+      
+    # insert the list to the set 
+    list_set = set(list1) 
+    # convert the set to the list 
+    unique_list = (list(list_set)) 
+    return unique_list
+
+class TavernAserai(TavernBuilder):
+    def __init__(self,char: Character):
+        super().__init__(char)
+    def createTavern(self):
+        self.tavern = Tavern(tavernType='Aserai')
+    def buildChairs(self):
+        for i in range(self.char.party_size):
+            self.tavern.chairs.append(i)
+    def buildNPCs(self):
+        if self.char.party_morale <= 50:
+            for i in range(10):
+                self.tavern.NPCs.append('bronze')
+            self.tavern.NPCs.append('elite')
+        elif self.char.party_morale > 50:
+            for i in range(10):
+                self.tavern.NPCs.append('bronze')
+            for i in range(5):
+                self.tavern.NPCs.append('silver')
+            for i in range(3):
+                self.tavern.NPCs.append('elite')
+    def buildFoods(self):
+        for i in range(100):
+            self.tavern.foods.append('grain')
+        for i in range (50):
+            self.tavern.foods.append('beef')
+        for i in range (20):
+            self.tavern.foods.append('grapes')
+    def dressItems(self):
+        for i in range(len(self.tavern.chairs)):
+            self.tavern.chairs[i] = 'camel skin dressed chair'
+    def dressNPCs(self):
+        for i in range(len(self.tavern.NPCs)):
+             self.tavern.NPCs[i] = 'animal skin dressed NPC'
+    def getTavern(self):
+        return self.tavern
+class Tavern:
+    def __init__(self, tavernType: str):
+        self.tavernType= tavernType
+        self.NPCs= []
+        self.chairs= []
+        self.foods= []
+    def printTavern(self):
+        print('tavernType:',self.tavernType)
+        print('\nNPCs:', self.NPCs[0])
+        print('\nchairs:', self.chairs[0])
+        print('\nfoods:','size:',len(self.foods), 'types:', unique(self.foods))
+class TavernManager:
+    def __init__(self,tavernBuilder: TavernBuilder):
+        self.tb = tavernBuilder
+    def buildTavern(self):
+        self.tb.createTavern()
+        self.tb.buildChairs()
+        self.tb.buildNPCs()
+        self.tb.buildFoods()
+        self.tb.dressItems()
+        self.tb.dressNPCs()
+    def getTavern(self):
+        return self.tb.getTavern()
+char1 = Character('Emre', 50, 70)
+tbA = TavernKuzait(char1)
+tbK = TavernAserai(char1)
+
+manager1 = TavernManager(tbA)
+manager1.buildTavern()
+tavern1 = manager1.getTavern()
+tavern1.printTavern()
+
+manager2 = TavernManager(tbK)
+manager2.buildTavern()
+tavern2 = manager2.getTavern()
+print('\n')
+tavern2.printTavern()
+
+
+
+
+    
