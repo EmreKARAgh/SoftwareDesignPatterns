@@ -1,0 +1,138 @@
+= Muhammed Emre Kara 160202094
+
+== Yazılım Tasarım Kalıpları
+=== Liskov Substitution Prensibi:
+Barbara Liskov tarafından geliştirilen bu prensip kısaca şöyle açıklanabilir:
+
+Alt sınıflardan oluşturulan nesneler üst sınıfların nesneleriyle yer değiştirdiklerinde aynı davranışı göstermek zorundadırlar.
+
+
+LSP’ye göre herhangi bir sınıf kullanıcısı, bu sınıfın alt sınıfları kullanmak için özel bir efor sarf etmek zorunda kalmamalıdır. Onun bakış açısından üst sınıf ve alt sınıf arasında farklılık yoktur. Üst sınıf nesnelerinin kullanıldığı metotlar içinde alt sınıftan olan nesneler aynı davranışı sergilemek zorundadır, çünkü oluşturulan metotlar üst sınıf davranışları örnek alınarak programlanmıştır. <<ref1,[1]>>
+
+===== Bu Projede:
+
+2 farklı tipte 3 adet kaynaktan yapılan indirme işlemini temsil etmek amaçlanmaktadır. Bunlardan Source1 ve Source2 indirme duraklatılalabilir yani pausable kaynaklardır. Ancak Source3 bu özelliği sağlamaz. Liskov Substitution Prensibi gerekliliklerini yerine getirmek adına farklı abstract classardan inherit edilmiştir.
+
+==== Code
+.liskov.py
+[source,python]
+----
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun  2 15:58:32 2020
+
+@author: EmreKARA
+"""
+
+import abc
+class DownloadingSource(metaclass=abc.ABCMeta):
+    def __init__(self):
+        pass
+    def download(self):
+        pass
+class PausableDownloadingSource(DownloadingSource):
+    def __init__(self):
+        DownloadingSource.__init__(self)
+    def pause(self): <1>
+        pass
+    def resume(self):
+        pass
+class Source1(PausableDownloadingSource): <2>
+    def __init__(self):
+        PausableDownloadingSource.__init__(self)
+    def download(self):
+        print('downloading from Source1 ...')
+    def pause(self):
+        print('Source 1 paused.')
+    def resume(self):
+        print('Source 1 resuming...')
+class Source2(PausableDownloadingSource):
+    def __init__(self):
+        PausableDownloadingSource.__init__(self)
+    def download(self):
+        print('downloading from Source2 ...')
+    def pause(self):
+        print('Source 2 paused.')
+    def resume(self):
+        print('Source 2 resuming...')
+class Source3(DownloadingSource): <3>
+    def __init__(self):
+        DownloadingSource.__init__(self)
+    def download(self):
+        print('downloading from Source3 ...')
+        
+src1 = Source1()
+src2 = Source2()
+src3 = Source3()
+
+src1.download()
+src2.download()
+src3.download()
+
+print()
+src1.pause()
+src2.pause()
+
+print()
+src1.resume()
+src2.resume()
+
+#src3.pause()
+----
+
+==== Çıktı
+.Liskov Results
+image::liskov.png[liskov_results]
+
+==== UML
+[uml, file = liskovUML.png]
+--
+@startuml
+Abstract Class DownloadingSource{
+    + __init__(self)
+    + download(self)
+}
+Class PausableDownloadingSource{
+    + __init__(self)
+    + pause(self)
+    + resume(self)
+}
+Class Source1{
+    + __init__(self)
+    + download(self)
+    + pause(self)
+    + resume(self)
+}
+Class Source2{
+    + __init__(self)
+    + download(self)
+    + pause(self)
+    + resume(self)
+}
+Class Source3{
+    + __init__(self)
+    + download(self)
+}
+
+DownloadingSource ..> ABC : <<instantiate(metaclass)>>
+Source1 ..|> PausableDownloadingSource
+Source2 ..|> PausableDownloadingSource
+PausableDownloadingSource --|> DownloadingSource
+Source3 ..|> DownloadingSource
+
+@enduml
+--
+
+<1> PausableDownloadingSource'de DownloadingSource'den kalıttıklarından fazla olarak pause ve resume metotları bulunur
+
+<2> Source1 ve Source2 PausableDownloadingSource'ı gerçeklerken
+
+<3> Source3 DownloadingSource'ı gerçekler. Dolayısıyla pause ve resume metotları çağırılamaz
+
+
+
+
+
+
+[[ref1]]
+[ 1 ] http://www.kurumsaljava.com/2009/10/29/liskov-substitution-principle-lsp-liskovun-yerine-gecme-prensibi/[Liskov substitution nedir?,role=external,window=_blank]

@@ -1,0 +1,144 @@
+= Muhammed Emre Kara 160202094
+
+== Yazılım Tasarım Kalıpları
+=== Mediator Pattern:
+
+
+Aracı Kalıbı (Mediator Pattern)
+Yirmi üç çeşit tasarım kalıbından biri olan aracı tasarım kalıbı davranışsal tasarım kalıplarının alt dallarından biri olarak kabul edilir. Aracı kalıbı genel olarak nesnelerin yönetimi, aralarındaki iletişimin merkezi bir noktadan sağlanması ve yönetilmesi için kullanılır. Bu nesneler arasındaki bağı azaltmakta ve sadece bir sınıfı, yönetici sınıf olarak diğer sınıfların koordine edilmesinden sorumlu kılar.
+
+Kalıp genellikle yazılan programın sınıf sayısı kadar kullanılır. Mantık (logic) ve hesaplama (compotation) bu sınıflar arasında dağıtılır. Ayrıca çok gelişmiş programlarda sınıflar arasında iletişim gittikçe daha da karmaşık bir hal alır ve kodun ilerlemesi ile okunaklılığı da bundan etkilenir. Aracı kalıbı kullanıldığında ise iletişim sınıflar arasında doğrudan sağlanmaz. Sınıflar arasında aracı kalıbı bulunur ve sınıfları yönetir. Böylece nesneler arası bağımlılık azalır ve program yönetilmeye ve geliştirilmeye daha elverişli hale gelir. Kısacası arabulucu tasarım deseni, sınıflar arasındaki bağımlılıkları azaltmak ve aralarındaki iletişimi kolaylaştırmak için kullanılır.
+
+
+Kullanım alanları:
+
+* Anlaşılması zor ve karmaşık şekilde yapılandırılmış nesneler için kullanılır.
+* Gelişmiş nesnel yapılarda bir nesnede yapılan değişikliğin diğer nesneleri etkilemesini engellemek için kullanılır.
+* Yeni sınıflandırmalara gerek kalmadan nesneler arasında dağıtımı sağlamak için kullanılır. <<ref1,[1]>>
+
+
+===== Bu Projede:
+
+Farklı konumdaki işveren ve işçilerin yakınlık bazlı eşleştirilmesi esnasında doğacak iletişim karmaşısını yönetebilmek adına Mediator Sınıf kullanılması amaçlanmaktadır. Employer'lar kendilerini Mediator sınıfa kaydederek konum bilgilerini aktarırlar. Daha sonra hangi işçinin hangi işveren ile eşlenmesi gerektiğine Mediator Sınıfı karar vererek eşleştirmeleri yapar.
+
+==== Code
+.mediator.py
+[source,python]
+----
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jun  3 00:08:36 2020
+
+@author: EmreKARA
+"""
+import abc
+import math
+class Employer:
+    def __init__(self, name, position):
+        self.name = name
+        self.position = position
+    def getPosition(self):
+        return self.position
+class MediatorMeta(metaclass = abc.ABCMeta):
+    def __init__(self):
+        pass
+    def notify(self):
+        pass
+    def addEmployer(self):
+        pass
+    def calculateDistance(self):
+        pass
+class Mediator(MediatorMeta):
+    def __init__(self):
+        MediatorMeta.__init__(self)
+        self.employers = []
+    def notify(self, position):
+        min_distance = float("inf")
+        optimumEmployer = None
+        for employer in self.employers:
+            distance = self.calculateDistance(position, employer.getPosition())
+            if(distance < min_distance):
+                min_distance = distance
+                optimumEmployer = employer
+        return optimumEmployer
+        
+    def addEmployer(self, employer):
+        self.employers.append(employer)
+    def calculateDistance(self, p1, p2):
+        x1 = p1[0]
+        y1 = p1[1]
+        x2 = p2[0]
+        y2 = p2[1]
+        distance = math.sqrt((math.pow((x2-x1),2)+math.pow((y2-y1),2)))
+        return distance
+class Employee:
+    def __init__(self,name, position, mediator):
+        self.name = name
+        self.position = position
+        self.mediator = mediator
+        self.employer = None
+    def notify(self):
+        self.employer = self.mediator.notify(self.position) <1>
+
+mediator = Mediator()
+
+allEmployers = []
+for i in range(1,6,2):
+    name = 'Employer'+str(i)
+    position = (i,i)
+    employer = Employer(name,position)
+    mediator.addEmployer(employer)
+    allEmployers.append(employer)
+    
+
+
+allEmployees = []
+for i in range(1,6):
+    name = 'Employee'+str(i)
+    position = (i,i)
+    allEmployees.append(Employee(name,position, mediator))
+    
+for employee in allEmployees:
+    employee.notify()
+    print(employee.name+'\'s', 'employer is', employee.employer.name)
+----
+==== Çıktı
+.Mediator Results
+image::mediator.png[mediator_results]
+
+==== UML
+[uml, file = mediatorUML.png]
+--
+@startuml
+Class Employer{
+    + __init__(self, name, position)
+    + getPosition(self):
+}
+Abstract Class MediatorMeta{
+    + __init__(self)
+    + notify(self)
+    + addEmployer(self)
+    + calculateDistance(self)
+}
+Class Mediator{
+    + __init__(self)
+    + notify(self)
+    + addEmployer(self)
+    + calculateDistance(self)
+}
+Class Employee{
+    + __init__(self,name, position, mediator)
+    + notify(self)
+}
+
+MediatorMeta ..> ABC : <<instantiate(metaclass)>>
+Mediator --|> MediatorMeta
+Mediator --> Employer
+Employee --> Mediator
+@enduml
+--
+
+<1> Employee Sınıfı notify sayesinde Employer'ların konum bilgisine sahip olmadan Mediator Aracılığıyla kendisine en yakın işvereni bulacaktır.
+
+[[ref1]]
+[ 1 ] https://bidb.itu.edu.tr/seyir-defteri/blog/2013/09/08/aracı-kalıbı-(mediator-pattern)[Mediator Pattern nedir?,role=external,window=_blank]

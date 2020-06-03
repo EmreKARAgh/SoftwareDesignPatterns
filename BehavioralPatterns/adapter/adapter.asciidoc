@@ -1,0 +1,169 @@
+= Muhammed Emre Kara 160202094
+
+== Yazılım Tasarım Kalıpları
+=== Adapter Pattern:
+
+Adaptör Kalıp, sadece bir sınıfa özel olan arayüzleri diğer sınıflarla uyumlu arayüzler haline getiren bir tasarım kalıbıdır. Adaptörler uyumlu olmayan arayüzler sebebiyle birbirleri ile çalışamayan sınıflara da birbirleri ile çalışma imkanı sunarlar.
+
+Adaptör kalıbının özelliklerinden bazıları şunlardır:
+
+* Bir sınıfın arayüzünü istemcinin istediği yeni bir arayüze dönüştürme işlemi yapar.
+* Birbiriyle uyumsuz arayüzleri olan sınıfların birbiriyle çalışmasını sağlar.
+* Var olan sınıfı yeni bir arayüzle sarmalar.
+* Eski bir bileşeni yeni oluşturulan sisteme entegre eder.
+Kullanıldığı durumlar:
+
+Bazı durumlarda bir araç takımı (toolkit) ya da sınıf kütüphanesinin (framework) arayüzü uygulama için gerekli olan arayüz ile uyumsuz olduğu için kullanılamaz. Bu durumda kütüphane değiştirilmez, çünkü kaynak kodu bilinmiyor olabilir. Kaynak kodun bilindiği düşünülecek olsa bile her bir uygulama için tek tek kütüphaneyi değiştirmek doğru bir çözüm değildir. Adaptör kalıp bu gibi durumlarda devreye girmesi için geliştirilmiştir. Kısaca adaptör kalıp, kullanılmak istenen bir sınıfın kullanılacak arayüzün gereklilikleri ile eşleşmediği zamanlarda kullanılır. <<ref1,[1]>>
+
+===== Bu Projede:
+
+Bir oyun içerisinde önceden yer alan Keyboard(Klavye) Kontrolcüsüne ek olarak getirilmek istenen Gamepad(Oyun Kolu) Kontrolcüsü sisteminin getirdiği metot çağırımları vb. sorunların üzerinden gelmek üzere bir Adapter sınıfın kullanılması amaçlanmaktadır. Adapter Sınıfı Gamepad üzerindeki tuşlara ait metotlar çağırılmak istendiğinde Keyboard'a ait Abstract Class'a metotları gerçekleyerek ortak bir arayüzden aynı yazımla metotların çağırılmalarını sağlar.
+
+==== Code
+.adapter.py
+[source,python]
+----
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun  2 15:00:08 2020
+
+@author: EmreKARA
+"""
+import abc
+class KeyboardMeta(metaclass=abc.ABCMeta):
+    def __init__(self):
+        pass
+    def pressD(self):
+        pass
+    def pressS(self):
+        pass
+    def pressW(self):
+        pass
+    def pressA(self):
+        pass
+class GamepadMeta(metaclass=abc.ABCMeta):
+    def __init__(self):
+        pass
+    def pressX(self):
+        pass
+    def pressA(self):
+        pass
+    def pressY(self):
+        pass
+    def pressB(self):
+        pass
+class KeyboardController(KeyboardMeta):
+    def __init__(self):
+        KeyboardMeta.__init__(self)
+    def pressD(self):
+        print('shooting.')
+    def pressS(self):
+        print('passing.')
+    def pressW(self):
+        print('loft passing')
+    def pressA(self):
+        print('throughing')
+
+class GamepadController(GamepadMeta):
+    def __init__(self):
+        GamepadMeta.__init__(self)
+    def pressX(self):
+        print('shooting.')
+    def pressA(self):
+        print('passing.')
+    def pressY(self):
+        print('loft passing')
+    def pressB(self):
+        print('throughing')
+
+class Adapter(KeyboardMeta): <1>
+    def __init__(self, gamepadController):
+        KeyboardMeta.__init__(self)
+        self.gamepadController = gamepadController
+    def pressD(self):
+        self.gamepadController.pressX() <2>
+    def pressS(self):
+        self.gamepadController.pressA()
+    def pressW(self):
+        self.gamepadController.pressY()
+    def pressA(self):
+        self.gamepadController.pressB()
+        
+
+keyC = KeyboardController()
+keyC.pressD()
+keyC.pressS()
+keyC.pressW()
+keyC.pressA()
+
+
+print('\nAfter Addapting:-------------------------------------------- ')
+gamepadC = GamepadController()
+adapter = Adapter(gamepadC)
+adapter.pressD()
+adapter.pressS()
+adapter.pressW()
+adapter.pressA()
+----
+
+==== Çıktı
+.Adapter Results
+image::adapter.png[adapter_results]
+
+==== UML
+[uml, file = adapterUML.png]
+--
+@startuml
+Abstract Class KeyboardMeta{
+    + __init__(self)
+    + pressD(self)
+    + pressS(self)
+    + pressW(self)
+    + pressA(self)
+}
+Abstract Class GamepadMeta{
+    + __init__(self)
+    + pressX(self)
+    + pressA(self)
+    + pressY(self)
+    + pressB(self)
+}
+Class KeyboardController{
+    + __init__(self)
+    + pressD(self)
+    + pressS(self)
+    + pressW(self)
+    + pressA(self)
+}
+Class GamepadController{
+    + __init__(self)
+    + pressX(self)
+    + pressA(self)
+    + pressY(self)
+    + pressB(self)
+}
+Class Adapter{
+    + __init__(self)
+    + pressD(self)
+    + pressS(self)
+    + pressW(self)
+    + pressA(self)
+}
+
+KeyboardMeta ..> ABC : <<instantiate(metaclass)>>
+GamepadMeta ..> ABC : <<instantiate(metaclass)>>
+KeyboardController --|> KeyboardMeta
+Adapter --|> KeyboardMeta
+GamepadController --|> GamepadMeta
+Adapter --> GamepadController
+
+@enduml
+--
+
+<1> Adapter sınıfı adapte edeceği sınıfa ait Abstract Class'ı inherit ederek belirtilen metot çağırımları gerçekleyeceğini garanti eder.
+
+<2> Adapter Sınıfı Eksi yapıya yani KeyboardControllerMeta sınıfına ait metot cağırımları ile karşılaştığında yeni eklenen yapı yani GamepadController'in ilgili metotlarını çağırarak adaptaysonu sağlar.
+
+
+[[ref1]]
+[ 1 ] http://www.kurumsaljava.com/2009/10/29/liskov-substitution-principle-lsp-liskovun-yerine-gecme-prensibi/[Adapter Pattern nedir?,role=external,window=_blank]
